@@ -98,7 +98,7 @@ Admin rules:
 - Use a maximum of 5 bullets unless the user asks for more detail.
 - For database actions, explain what can be done if the request was not already handled by server logic.
 
-## Barber Behavior
+## Barber Behavior 
 
 Barbers can ask about:
 
