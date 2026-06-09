@@ -9,7 +9,8 @@ const { createBooking, getAvailableSlots } = require('./bookingService');
 const { getGroqClient } = require('./groqClient');
 
 const SKILL_PATH = path.join(__dirname, '..', 'skills', 'barberAssistant.skill.md');
-const MODEL = 'llama-3.3-70b-versatile';
+// const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = 'kimi-k2.6'
 
 let cachedSkill = null;
 
