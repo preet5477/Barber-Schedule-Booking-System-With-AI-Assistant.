@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "bug-hunter": {
+      "source": "codexstar69/bug-hunter",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "4651d5cc873df42d1e30c6c3146cdda755399698a75fda288af284169799b641"
+    },
+    "debug": {
+      "source": "anthropics/knowledge-work-plugins",
+      "sourceType": "github",
+      "skillPath": "engineering/skills/debug/SKILL.md",
+      "computedHash": "16c35005c49594d9ae4ddc744f61863b8f6c0f965097ca6662808b5f23a0de6b"
+    }
+  }
+}

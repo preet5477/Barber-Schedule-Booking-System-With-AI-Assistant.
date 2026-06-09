@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "prestart": "node prestart.js",
+    "start": "node prestart.js && node server.js",
+    "dev": "node prestart.js && nodemon server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
