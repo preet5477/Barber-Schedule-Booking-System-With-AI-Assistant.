@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { showError } from '../utils/alerts';
 
-const tabs = ['all', 'pending', 'confirmed', 'completed', 'rejected', 'cancelled'];
+const tabs = ['all', 'pending', 'confirmed', 'completed', 'rejected'];
 
 const MyBookings = () => {
   const { user, loading: authLoading } = useAuth();
@@ -50,8 +50,6 @@ const MyBookings = () => {
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'rejected':
         return 'bg-red-100 text-red-800 border-red-200';
-      case 'cancelled':
-        return 'bg-stone-100 text-stone-700 border-stone-200';
       default:
         return 'bg-stone-100 text-stone-700 border-stone-200';
     }

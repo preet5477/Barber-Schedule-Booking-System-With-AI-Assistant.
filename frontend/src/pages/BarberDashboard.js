@@ -160,7 +160,6 @@ const BarberDashboard = () => {
   const upcomingBookings = bookings
     .filter((b) =>
       b.status !== "completed" &&
-      b.status !== "cancelled" &&
       b.status !== "rejected"
     )
     .sort((a, b) => {
@@ -179,7 +178,6 @@ const BarberDashboard = () => {
         return "bg-green-100 text-green-800";
       case "completed":
         return "bg-blue-100 text-blue-800";
-      case "cancelled":
       case "rejected":
         return "bg-red-100 text-red-800";
       default:
@@ -347,7 +345,7 @@ const BarberDashboard = () => {
                             onClick={() =>
                               handleUpdateStatus(
                                 booking._id,
-                                "cancelled"
+                                "rejected"
                               )
                             }
                             className="rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600"
@@ -358,7 +356,6 @@ const BarberDashboard = () => {
                       )}
 
                       {(booking.status === "completed" ||
-                        booking.status === "cancelled" ||
                         booking.status === "rejected") && (
                         <span className="text-gray-500 text-sm italic">
                           No actions available

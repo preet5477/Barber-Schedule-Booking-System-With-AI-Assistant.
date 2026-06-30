@@ -1,144 +1,3 @@
-// import React, { createContext, useState, useContext, useEffect } from 'react';
-// import { authAPI } from '../services/api';
-
-// const AuthContext = createContext();
-
-// export const useAuth = () => {
-//   const context = useContext(AuthContext);
-//   if (!context) {
-//     throw new Error('useAuth must be used within an AuthProvider');
-//   }
-//   return context;
-// };
-
-// export const AuthProvider = ({ children }) => {
-//   const [user, setUser] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [token, setToken] = useState(null);
-
-//   // Load user from localStorage on mount
-//   useEffect(() => {
-//     const storedToken = localStorage.getItem('token');
-//     const storedUser = localStorage.getItem('user');
-
-//     if (storedToken && storedUser) {
-//       setToken(storedToken);
-//       setUser(JSON.parse(storedUser));
-//       verifyToken(storedToken);
-//     } else {
-//       setLoading(false);
-//     }
-//   }, []);
-
-//   const verifyToken = async (storedToken) => {
-//     try {
-//       const response = await authAPI.getMe(storedToken);
-
-//       if (response.data.success) {
-//         setUser(response.data.user);
-//         localStorage.setItem('user', JSON.stringify(response.data.user));
-//       }
-//     } catch (error) {
-//       console.error('Token verification failed:', error);
-//       logout();
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const login = async (email, password) => {
-//     try {
-//       const response = await authAPI.login({ email, password });
-
-//       if (response.data.success) {
-//         const { token, user } = response.data;
-
-//         // Save immediately
-//         setToken(token);
-//         setUser(user);
-//         localStorage.setItem('token', token);
-//         localStorage.setItem('user', JSON.stringify(user));
-
-//         //  FIX: Stop loading immediately
-//         setLoading(false);
-
-//         return { success: true, user };
-//       }
-
-//       return {
-//         success: false,
-//         message: response.data.message || 'Login failed',
-//       };
-//     } catch (error) {
-//       const message =
-//         error.response?.data?.message ||
-//         error.message ||
-//         'Login failed. Try again.';
-//       return { success: false, message };
-//     }
-//   };
-
-//   const register = async (userData) => {
-//     try {
-//       const response = await authAPI.register(userData);
-
-//       if (response.data.success) {
-//         const { token, user } = response.data;
-
-//         setToken(token);
-//         setUser(user);
-//         localStorage.setItem('token', token);
-//         localStorage.setItem('user', JSON.stringify(user));
-
-//         //  FIX: Stop loading immediately
-//         setLoading(false);
-
-//         return { success: true, user };
-//       }
-
-//       return {
-//         success: false,
-//         message: response.data.message || 'Registration failed',
-//       };
-//     } catch (error) {
-//       const message =
-//         error.response?.data?.message ||
-//         error.message ||
-//         'Registration failed.';
-//       return { success: false, message };
-//     }
-//   };
-
-//   const logout = () => {
-//     setUser(null);
-//     setToken(null);
-//     localStorage.removeItem('token');
-//     localStorage.removeItem('user');
-//   };
-
-//   const updateUser = (updatedData) => {
-//     const updatedUser = { ...user, ...updatedData };
-//     setUser(updatedUser);
-//     localStorage.setItem('user', JSON.stringify(updatedUser));
-//   };
-
-//   const value = {
-//     user,
-//     token,
-//     login,
-//     register,
-//     logout,
-//     updateUser,
-//     loading,
-//     isAuthenticated: !!user,
-//   };
-
-//   return (
-//     <AuthContext.Provider value={value}>
-//       {!loading && children}
-//     </AuthContext.Provider>
-//   );
-// };
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authAPI } from '../services/api';
@@ -162,6 +21,34 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     console.log('🔄 AuthProvider: Initializing...');
     initializeAuth();
+  }, []);
+
+  // Listen for token refresh events
+  useEffect(() => {
+    const handleTokenRefresh = (event) => {
+      console.log('🔄 AuthProvider: Token refreshed event received');
+      const { token: newToken, user: newUser } = event.detail;
+      
+      if (newToken) {
+        setToken(newToken);
+      }
+      
+      if (newUser) {
+        setUser(newUser);
+        localStorage.setItem('user', JSON.stringify(newUser));
+        if (newUser.role) {
+          localStorage.setItem('role', newUser.role);
+        }
+      }
+      
+      console.log('✅ AuthProvider: Token and user state updated from refresh');
+    };
+
+    window.addEventListener('token-refreshed', handleTokenRefresh);
+    
+    return () => {
+      window.removeEventListener('token-refreshed', handleTokenRefresh);
+    };
   }, []);
 
   const initializeAuth = () => {

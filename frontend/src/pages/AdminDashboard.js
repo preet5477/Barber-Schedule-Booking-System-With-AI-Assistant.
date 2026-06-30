@@ -1,193 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
-// const AdminDashboard = () => {
-//   const [stats, setStats] = useState({
-//     customerCount: 0,
-//     serviceCount: 0,
-//     income: 0,
-//     bookingCount: 0,
-//   });
-
-//   const [bookings, setBookings] = useState([]);
-//   const [filteredBookings, setFilteredBookings] = useState([]);
-//   const [selectedStatus, setSelectedStatus] = useState('all');
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     fetchDashboardData();
-//   }, []);
-
-//   const fetchDashboardData = async () => {
-//     try {
-//       const token = localStorage.getItem('token');
-//       const config = { headers: { Authorization: `Bearer ${token}` } };
-
-//       // Get stats + bookings together
-//       const [statsRes, bookingsRes] = await Promise.all([
-//         axios.get('http://localhost:5000/api/dashboard/stats', config),
-//         axios.get('http://localhost:5000/api/bookings/all', config),
-//       ]);
-
-//       setStats(statsRes.data);
-//       // setBookings(bookingsRes.data);
-//       // setFilteredBookings(bookingsRes.data);
-//       setBookings(bookingsRes.data.bookings || []);
-//       setFilteredBookings(bookingsRes.data.bookings || []);
-//     } catch (error) {
-//       console.error('Error fetching admin dashboard data:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleFilter = (status) => {
-//     setSelectedStatus(status);
-//     if (status === 'all') {
-//       setFilteredBookings(bookings);
-//     } else {
-//       setFilteredBookings(bookings.filter(b => b.status === status));
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <div>
-//         <Navbar />
-//         <div className="flex items-center justify-center min-h-screen">
-//           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   // Count bookings by status
-//   const statusCounts = {
-//     pending: bookings.filter(b => b.status === 'pending').length,
-//     accepted: bookings.filter(b => b.status === 'accepted').length,
-//     completed: bookings.filter(b => b.status === 'completed').length,
-//     rejected: bookings.filter(b => b.status === 'rejected').length,
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       {/* <Navbar /> */}
-//       <div className="max-w-7xl mx-auto px-4 py-8">
-//         <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-
-//         {/* Stats Summary */}
-//         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-//           <div className="bg-white p-6 rounded-lg shadow border-l-4 border-blue-600">
-//             <h3 className="text-gray-600">Customers</h3>
-//             <p className="text-3xl font-bold">{stats.customerCount}</p>
-//           </div>
-//           <div className="bg-white p-6 rounded-lg shadow border-l-4 border-green-600">
-//             <h3 className="text-gray-600">Services</h3>
-//             <p className="text-3xl font-bold">{stats.serviceCount}</p>
-//           </div>
-//           <div className="bg-white p-6 rounded-lg shadow border-l-4 border-purple-600">
-//             <h3 className="text-gray-600">Bookings</h3>
-//             <p className="text-3xl font-bold">{bookings.length}</p>
-//           </div>
-//           <div className="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-600">
-//             <h3 className="text-gray-600">Income</h3>
-//             <p className="text-3xl font-bold">₹{stats.income}</p>
-//           </div>
-//         </div>
-
-//         {/* Filter Buttons */}
-//         <div className="flex gap-4 mb-6">
-//           {['all', 'pending', 'accepted', 'completed', 'rejected'].map(status => (
-//             <button
-//               key={status}
-//               onClick={() => handleFilter(status)}
-//               className={`px-5 py-2 rounded-lg text-sm font-medium border ${
-//                 selectedStatus === status
-//                   ? 'bg-blue-600 text-white border-blue-600'
-//                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-//               }`}
-//             >
-//               {status.charAt(0).toUpperCase() + status.slice(1)} (
-//               {status === 'all' ? bookings.length : statusCounts[status]})
-//             </button>
-//           ))}
-//         </div>
-
-//         {/* Booking List */}
-//         <div className="bg-white rounded-lg shadow p-6">
-//           <h2 className="text-xl font-semibold mb-4">
-//             {selectedStatus === 'all'
-//               ? 'All Bookings'
-//               : `${selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)} Bookings`}
-//           </h2>
-
-//           {filteredBookings.length === 0 ? (
-//             <p className="text-gray-500 text-center py-6">
-//               No bookings found for this category
-//             </p>
-//           ) : (
-//             <table className="w-full border-collapse">
-//               <thead>
-//                 <tr className="bg-gray-100 text-gray-700">
-//                   <th className="p-3 text-left">Sno.</th>
-//                   <th className="p-3 text-left">Customer</th>
-//                   <th className="p-3 text-left">Barber</th>
-//                   <th className="p-3 text-left">Services</th>
-//                   <th className="p-3 text-left">Date</th>
-//                   <th className="p-3 text-left">Time</th>
-//                   <th className="p-3 text-left">Amount</th>
-//                   <th className="p-3 text-left">Status</th>
-//                 </tr>
-//               </thead>
-              
-//               <tbody>
-                
-//                 {filteredBookings.map((b, idx) => (
-//                   // console.log("response = ",++idx),
-//                   <tr
-//                     key={idx}
-//                     className="border-b hover:bg-gray-50 transition-colors"
-//                   >
-//                     <td className="p-3">{++idx}</td>
-//                     <td className="p-3">{b.customer?.name || 'N/A'}</td>
-//                     <td className="p-3">{b.barber?.name || 'N/A'}</td>
-//                     <td className="p-3">
-//                       {b.services
-//                         .map(s => s.service?.name || 'Unknown')
-//                         .join(', ')}
-//                     </td>
-//                     <td className="p-3">
-//                       {new Date(b.bookingDate).toLocaleDateString()}
-//                     </td>
-//                     <td className="p-3">
-//                       {b.startTime} - {b.endTime}
-//                     </td>
-//                     <td className="p-3">₹{b.totalAmount}</td>
-//                     <td
-//                       className={`p-3 font-semibold ${
-//                         b.status === 'pending'
-//                           ? 'text-yellow-600'
-//                           : b.status === 'accepted'
-//                           ? 'text-green-600'
-//                           : b.status === 'completed'
-//                           ? 'text-blue-600'
-//                           : 'text-red-600'
-//                       }`}
-//                     >
-//                       {b.status}
-//                     </td>
-//                   </tr>
-                  
-//                 ))}
-//               </tbody>
-//             </table>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     customerCount: 0,
@@ -343,20 +156,11 @@ const AdminDashboard = () => {
     new Set(bookings.map(b => b.customer?._id).filter(Boolean))
   ).map(id => bookings.find(b => b.customer?._id === id)?.customer);
 
-  // Count bookings by status
-  // const statusCounts = {
-  //   pending: bookings.filter(b => b.status === 'pending').length,
-  //   accepted: bookings.filter(b => b.status === 'accepted').length,
-  //   confirmed: bookings.filter(b => b.status === 'confirmed').length,
-  //   completed: bookings.filter(b => b.status === 'completed').length,
-  //   cancelled: bookings.filter(b => b.status === 'cancelled').length,
-  //   rejected: bookings.filter(b => b.status === 'rejected').length,
-  // };
+
 const statusCounts = {
   pending: bookings.filter(b => b.status === 'pending').length,
   confirmed: bookings.filter(b => b.status === 'confirmed').length,
   completed: bookings.filter(b => b.status === 'completed').length,
-  cancelled: bookings.filter(b => b.status === 'cancelled').length,
   rejected: bookings.filter(b => b.status === 'rejected').length,
 };
 
@@ -413,7 +217,7 @@ const statusCounts = {
             </label>
             <div className="flex gap-5 flex-wrap">
               {/* {['all', 'pending', 'accepted', 'completed', 'rejected'].map(status => ( */}
-                {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map(status => (
+                {['all', 'pending', 'confirmed', 'completed', 'rejected'].map(status => (
 
                 <button
                   key={status}

@@ -123,6 +123,53 @@ router.post(
   }
 );
 
+// REFRESH token endpoint - generate new token from expired token
+router.post("/refresh", async (req, res) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No authentication token' });
+    }
+
+    // Verify token ignoring expiration to extract user info
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', { ignoreExpiration: true });
+    
+    if (!decoded.id && !decoded.userId) {
+      return res.status(401).json({ success: false, message: 'Invalid token structure' });
+    }
+
+    const userId = decoded.id || decoded.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'User not found' });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ success: false, message: 'Account has been deactivated' });
+    }
+
+    // Generate new token
+    const newToken = generateToken(user._id, user.role);
+    
+    res.json({
+      success: true,
+      message: 'Token refreshed successfully',
+      token: newToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Token refresh error:", error);
+    res.status(401).json({ success: false, message: 'Failed to refresh token', error: error.message });
+  }
+});
+
 // GET current logged in user profile
 router.get("/me", auth, async (req, res) => {
   try {
